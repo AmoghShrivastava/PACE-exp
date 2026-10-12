@@ -234,6 +234,10 @@ class T1TableTennisEnvCfg(TTEnvCfg):
         #######################################################
         self.sim.dt = 0.002
         self.sim.decimation = 10 # 50 Hz
+        import os as _os
+        if _os.environ.get("PACE_FAST_SIM", "0") == "1":  # repo-provided fast-validation setting, still 50 Hz policy
+            self.sim.dt = 0.005
+            self.sim.decimation = 4
         #######################################################
         self.scene.height_scanner.prim_body_name = "Trunk"
         self.scene.robot = BOOSTER_T1_TT_P2_CFG
@@ -321,7 +325,7 @@ class T1TT_EvalEnvCfg(T1TableTennisEnvCfg):
 class T1TableTennisAgentCfg(TTAgentCfg):
     experiment_name: str = "t1_table_tennis"
     logger = "tensorboard"
-    save_interval = 250
+    save_interval = 100
     max_iterations = 10000
 
     # Auxiliary predictor configuration used by OnPolicyPredictorRegressionRunner
@@ -336,3 +340,81 @@ class T1TableTennisAgentCfg(TTAgentCfg):
         "train_until_iters":20,
     }
 
+
+
+# ---------------------------------------------------------------------------
+# PACE-MP: PACE + human motion prior from HIM Arena table-tennis mocap
+# ---------------------------------------------------------------------------
+@configclass
+class T1TableTennisMPRewardCfg(T1TableTennisRewardCfg):
+    reward_motion_prior = RewTerm(
+        func=mdp.reward_motion_prior,
+        weight=float(__import__("os").environ.get("PACE_MP_W", "3.0")),
+        params={"std": 0.6},
+    )
+
+
+@configclass
+class T1TableTennisMPEnvCfg(T1TableTennisEnvCfg):
+    reward = T1TableTennisMPRewardCfg()
+    motion_lib_path: str = ""
+
+
+@configclass
+class T1TT_MP_EvalEnvCfg(T1TT_EvalEnvCfg):
+    reward = T1TableTennisMPRewardCfg()
+    motion_lib_path: str = ""
+
+
+@configclass
+class T1TableTennisMPAgentCfg(T1TableTennisAgentCfg):
+    experiment_name: str = "t1_table_tennis_mp"
+
+
+# PACE-MP with the strike-gated motion prior (report step 1)
+@configclass
+class T1TableTennisMPGRewardCfg(T1TableTennisRewardCfg):
+    reward_motion_prior = RewTerm(
+        func=mdp.reward_motion_prior_gated,
+        weight=float(__import__("os").environ.get("PACE_MP_W", "3.0")),
+        params={"std": 0.6, "pre_window": 0.3, "post_window": 0.2, "post_scale": 2.0},
+    )
+
+
+@configclass
+class T1TableTennisMPGEnvCfg(T1TableTennisEnvCfg):
+    reward = T1TableTennisMPGRewardCfg()
+    motion_lib_path: str = ""
+
+
+@configclass
+class T1TT_MPG_EvalEnvCfg(T1TT_EvalEnvCfg):
+    reward = T1TableTennisMPGRewardCfg()
+    motion_lib_path: str = ""
+
+
+@configclass
+class T1TableTennisMPGAgentCfg(T1TableTennisAgentCfg):
+    experiment_name: str = "t1_table_tennis_mpg"
+
+
+# Paper Table II serve categories, for running PACE's unmodified scripts/eval.py on each
+@configclass
+class T1TT_MPG_EvalLongCfg(T1TT_MPG_EvalEnvCfg):
+    def __post_init__(self):
+        super().__post_init__()
+        self.ball.ball_speed_x_range = (-6.5, -6.2)
+
+
+@configclass
+class T1TT_MPG_EvalMidCfg(T1TT_MPG_EvalEnvCfg):
+    def __post_init__(self):
+        super().__post_init__()
+        self.ball.ball_speed_x_range = (-6.2, -5.7)
+
+
+@configclass
+class T1TT_MPG_EvalShortCfg(T1TT_MPG_EvalEnvCfg):
+    def __post_init__(self):
+        super().__post_init__()
+        self.ball.ball_speed_x_range = (-5.7, -5.2)

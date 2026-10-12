@@ -1,0 +1,27 @@
+mocap forehand strokes: 1040  window H=54 contact=27 joints=['Right_Shoulder_Pitch', 'Right_Shoulder_Roll', 'Right_Elbow_Pitch', 'Right_Elbow_Yaw', 'Waist', 'Left_Shoulder_Pitch', 'Left_Shoulder_Roll', 'Left_Elbow_Pitch', 'Left_Elbow_Yaw']
+key mean [ 0.412 -0.321 -0.107] std [0.116 0.144 0.143] min [-0.343 -0.745 -0.623] max [0.615 0.057 0.461]
+vae it 0 rec 0.9395 kl 0.30 beta 0.0000 val_rec 1.0977 val_rec_prior 1.1067
+vae it 1000 rec 0.0891 kl 16.94 beta 0.0040 val_rec 0.0727 val_rec_prior 0.7678
+vae it 2000 rec 0.1060 kl 9.33 beta 0.0080 val_rec 0.0999 val_rec_prior 0.7291
+vae it 3000 rec 0.1114 kl 7.14 beta 0.0100 val_rec 0.1301 val_rec_prior 0.6504
+vae it 4000 rec 0.0967 kl 5.91 beta 0.0100 val_rec 0.1482 val_rec_prior 0.6158
+vae it 5000 rec 0.0905 kl 5.22 beta 0.0000 val_rec 0.1647 val_rec_prior 0.5506
+vae it 6000 rec 0.0593 kl 9.53 beta 0.0040 val_rec 0.1369 val_rec_prior 0.6082
+vae it 7000 rec 0.0774 kl 6.26 beta 0.0080 val_rec 0.1692 val_rec_prior 0.5677
+vae it 8000 rec 0.0783 kl 4.72 beta 0.0100 val_rec 0.1904 val_rec_prior 0.5113
+vae it 9000 rec 0.0696 kl 4.13 beta 0.0100 val_rec 0.2059 val_rec_prior 0.5205
+vae it 10000 rec 0.0705 kl 4.08 beta 0.0000 val_rec 0.2277 val_rec_prior 0.5442
+vae it 11000 rec 0.0514 kl 6.90 beta 0.0040 val_rec 0.1991 val_rec_prior 0.5717
+vae it 12000 rec 0.0650 kl 4.97 beta 0.0080 val_rec 0.2242 val_rec_prior 0.5546
+vae it 13000 rec 0.0693 kl 3.83 beta 0.0100 val_rec 0.2401 val_rec_prior 0.5469
+vae it 14000 rec 0.0674 kl 3.68 beta 0.0100 val_rec 0.2552 val_rec_prior 0.5344
+vae it 15000 rec 0.0632 kl 3.26 beta 0.0000 val_rec 0.2664 val_rec_prior 0.5118
+vae it 16000 rec 0.0475 kl 5.62 beta 0.0040 val_rec 0.2408 val_rec_prior 0.5010
+vae it 17000 rec 0.0559 kl 3.72 beta 0.0080 val_rec 0.2589 val_rec_prior 0.5106
+vae it 18000 rec 0.0605 kl 3.29 beta 0.0100 val_rec 0.2761 val_rec_prior 0.5428
+vae it 19000 rec 0.0552 kl 3.11 beta 0.0100 val_rec 0.2884 val_rec_prior 0.5200
+vae it 19999 rec 0.0572 kl 2.72 beta 0.0100 val_rec 0.2946 val_rec_prior 0.5103
+VAE generated 15000, kept 3404 after filtering; rejects {'limit': 1943, 'jerk': 0, 'key': 9653}
+aug key mean [ 0.429 -0.279  0.078] std [0.098 0.19  0.141]
+coverage[mocap] grid within 5cm: 0.064, within 10cm: 0.163, median nn dist 0.235
+coverage[mocap+vae] grid within 5cm: 0.105, within 10cm: 0.211, median nn dist 0.212

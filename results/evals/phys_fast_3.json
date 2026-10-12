@@ -1,0 +1,9 @@
+{
+ "fast_sim": true,
+ "dt": 0.005,
+ "decimation": 4,
+ "speed": 3.0,
+ "bounced": 0.2760416666666667,
+ "reached": 0.90625,
+ "vx_after": -0.893046647310257
+}

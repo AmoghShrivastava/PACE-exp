@@ -1,0 +1,426 @@
+<title>How Our Table-Tennis Robot Learned</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a course. Sticky chapter list on the left (top on phones), one 780px reading column. Plain explanation first, then "Under the hood" technical detail, then "Why". Single light theme by choice. */
+:root {
+  color-scheme: light;
+  --bg: #f6f8fb; --paper: #ffffff; --ink: #142233; --ink-2: #44556a; --ink-3: #6f7f92; --rule: #d9e2ec;
+  --blue: #1c5cb8; --blue-soft: #e6eefa; --ball: #e8731c; --ball-soft: #fdeedf; --green: #1a7f4b; --red: #b2332e; --slate: #eef1f5;
+  --display: "Archivo", Arial, sans-serif; --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif; --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 17px/1.66 var(--body); }
+.layout { max-width: 1160px; margin: 0 auto; padding-inline: 20px; padding-block: 0 64px; display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 44px; }
+@media (max-width: 880px) { .layout { grid-template-columns: minmax(0, 1fr); gap: 0; } }
+nav.toc { position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; padding-block: 28px; max-height: 100vh; overflow-y: auto; }
+nav.toc b { display: block; font: 500 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 12px; }
+nav.toc ol { margin: 0; padding: 0; list-style: none; counter-reset: c; display: grid; gap: 1px; }
+nav.toc li { counter-increment: c; }
+nav.toc a { display: grid; grid-template-columns: 26px 1fr; gap: 4px; padding: 5px 8px; border-radius: 8px; color: var(--ink-2); text-decoration: none; font-size: 14px; line-height: 1.35; }
+nav.toc a::before { content: counter(c); font: 500 12px/1.6 var(--mono); color: var(--ink-3); }
+nav.toc a:hover { background: var(--blue-soft); color: var(--blue); }
+@media (max-width: 880px) {
+  nav.toc { position: static; max-height: none; padding-block: 18px 6px; border-bottom: 1px solid var(--rule); }
+  nav.toc ol { grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); }
+}
+main { min-width: 0; max-width: 800px; }
+header.hero { padding-block: 34px 18px; display: grid; gap: 14px; }
+.kicker { font: 500 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--blue); }
+h1, h2, h3 { font-family: var(--display); margin: 0; line-height: 1.15; text-wrap: balance; }
+h1 { font-weight: 800; font-size: clamp(32px, 5.2vw, 48px); }
+h2 { font-weight: 800; font-size: clamp(24px, 3.3vw, 31px); }
+h3 { font-weight: 600; font-size: 18.5px; margin-top: 4px; }
+p { margin: 0; }
+.lead { font-size: 19px; color: var(--ink-2); }
+section { padding-block: 32px; border-top: 1px solid var(--rule); display: grid; gap: 15px; }
+section .num { font: 500 12px/1 var(--mono); color: var(--ball); letter-spacing: .1em; text-transform: uppercase; }
+ul, ol.plain { margin: 0; padding-left: 22px; display: grid; gap: 6px; }
+.why, .ours, .tech { border-radius: 12px; padding: 14px 16px; display: grid; gap: 8px; min-width: 0; }
+.why { background: var(--blue-soft); }
+.ours { background: var(--ball-soft); }
+.tech { background: var(--paper); border: 1px solid var(--rule); }
+.why > b:first-child, .ours > b:first-child, .tech > b:first-child { font: 700 12px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+.why > b:first-child { color: var(--blue); }
+.ours > b:first-child { color: #a3480b; }
+.tech > b:first-child { color: var(--ink-3); }
+.tech p, .tech li { font-size: 15.5px; }
+.analogy { border-left: 4px solid var(--ball); padding: 4px 0 4px 14px; color: var(--ink-2); font-style: italic; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 14px; }
+.box { background: var(--paper); border: 1px solid var(--rule); border-radius: 12px; padding: 14px 16px; display: grid; gap: 8px; min-width: 0; }
+.scroll { overflow-x: auto; border: 1px solid var(--rule); border-radius: 12px; background: var(--paper); }
+table { border-collapse: collapse; width: 100%; font-size: 15px; font-variant-numeric: tabular-nums; }
+th, td { padding: 8px 12px; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+thead th { font: 500 11px/1.25 var(--mono); letter-spacing: .07em; text-transform: uppercase; color: var(--ink-3); background: var(--bg); }
+td.n, th.n { text-align: right; white-space: nowrap; font-family: var(--mono); font-size: 13.5px; }
+td.pos { color: var(--green); }
+td.neg { color: var(--red); }
+tr.hl td { background: var(--ball-soft); }
+.formula { font-family: var(--mono); font-size: 14px; line-height: 1.7; background: var(--slate); border-radius: 10px; padding: 10px 14px; overflow-x: auto; white-space: pre; color: var(--ink); }
+pre.mermaid { background: var(--paper); border: 1px solid var(--rule); border-radius: 12px; padding: 14px; overflow-x: auto; margin: 0; font-family: var(--mono); font-size: 13px; }
+figure { margin: 0; display: grid; gap: 8px; }
+video { width: 100%; max-width: 100%; border-radius: 10px; border: 1px solid var(--rule); background: #0d1520; }
+figcaption { font-size: 14.5px; color: var(--ink-3); }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: 12px; }
+.stat { background: var(--paper); border: 1px solid var(--rule); border-radius: 12px; padding: 12px 14px; display: grid; gap: 4px; }
+.stat .v { font: 800 25px/1.05 var(--display); color: var(--blue); font-variant-numeric: tabular-nums; }
+.stat .l { font-size: 14px; color: var(--ink-2); }
+.bar { display: grid; grid-template-columns: 170px 1fr 60px; gap: 10px; align-items: center; font-size: 14px; }
+.bar .track { height: 12px; background: var(--slate); border-radius: 6px; overflow: hidden; }
+.bar .fill { height: 100%; background: var(--blue); border-radius: 6px; }
+.bar .fill.hum { background: var(--ball); }
+.bar .val { text-align: right; font-family: var(--mono); font-size: 13px; color: var(--ink-2); }
+@media (max-width: 520px) { .bar { grid-template-columns: 110px 1fr 52px; font-size: 13px; } }
+dl { margin: 0; display: grid; gap: 10px; }
+dl div { background: var(--paper); border: 1px solid var(--rule); border-radius: 10px; padding: 10px 14px; }
+dt { font-weight: 700; }
+dd { margin: 2px 0 0; color: var(--ink-2); font-size: 15.5px; }
+code { font-family: var(--mono); font-size: .86em; background: var(--blue-soft); padding: 1px 5px; border-radius: 4px; }
+a { color: var(--blue); }
+:focus-visible { outline: 2px solid var(--ball); outline-offset: 2px; }
+</style>
+
+<div class="layout">
+<nav class="toc" aria-label="Chapters"><b>Chapters</b><ol>
+  <li><a href="#goal">The goal</a></li>
+  <li><a href="#rl">Learning by trial and error</a></li>
+  <li><a href="#sim">Robot and simulator</a></li>
+  <li><a href="#see">What the robot senses</a></li>
+  <li><a href="#do">What the robot controls</a></li>
+  <li><a href="#predict">Predicting the ball</a></li>
+  <li><a href="#rewards">The reward function</a></li>
+  <li><a href="#practice">Episodes and randomization</a></li>
+  <li><a href="#critic">The critic</a></li>
+  <li><a href="#ppo">PPO, step by step</a></li>
+  <li><a href="#human">Human motion pipeline</a></li>
+  <li><a href="#vae">The motion VAE</a></li>
+  <li><a href="#bonus">The stroke bonus</a></li>
+  <li><a href="#share">How much the human motion counted</a></li>
+  <li><a href="#lessons">What went wrong, and fixes</a></li>
+  <li><a href="#run">The training run</a></li>
+  <li><a href="#test">Testing</a></li>
+  <li><a href="#words">Glossary</a></li>
+</ol></nav>
+
+<main>
+<header class="hero">
+  <span class="kicker">From scratch · PACE + HIM Arena human motion · Booster T1</span>
+  <h1>How our table-tennis robot learned to return serves</h1>
+  <p class="lead">Every part of how the final robot was trained: what it senses, what it controls, how it is scored, how it practises and improves, and how the human motion capture was used. Each chapter gives the idea in plain words, then the exact technical detail, then why it was done that way.</p>
+  <div class="stats">
+    <div class="stat"><span class="v">98.5%</span><span class="l">serves hit (89,263 test serves)</span></div>
+    <div class="stat"><span class="v">96.8%</span><span class="l">serves returned onto the table</span></div>
+    <div class="stat"><span class="v">10,000</span><span class="l">PPO iterations</span></div>
+    <div class="stat"><span class="v">≈983 M</span><span class="l">decisions (≈228 days of play) in ≈17 GPU hours</span></div>
+  </div>
+</header>
+
+<section id="goal"><span class="num">Chapter 1</span><h2>The goal</h2>
+  <p>A serving machine on the far side of the table fires balls at a humanoid robot. The robot must walk to the right spot, swing, hit the ball, and land it on the opponent's half. The ball takes under half a second to arrive, so footwork and stroke have to happen together.</p>
+  <p>PACE (Purdue, ICRA 2026) learns this with one neural network that controls the whole body. We rebuilt PACE on HIM Arena compute, fixed what kept it from training well, and added a reward built from HIM Arena's human motion capture.</p>
+  <figure><video src="videos/final.mp4" controls muted loop playsinline preload="metadata" style="aspect-ratio:16/9"></video>
+    <figcaption>The final robot after 10,000 iterations, half speed. Main view from behind the robot; inset follows it from the side.</figcaption></figure>
+</section>
+
+<section id="rl"><span class="num">Chapter 2</span><h2>Learning by trial and error</h2>
+  <p>The robot is controlled by a <b>policy</b>, a neural network mapping what it senses (the <b>observation</b>) to what each joint should do (the <b>action</b>). It starts random, practises in simulation, and receives a <b>reward</b> every step. Training adjusts the network so actions that led to more total reward become more likely. This is <b>reinforcement learning</b> (RL).</p>
+  <p class="analogy">Like learning a sport blindfolded from a coach who only says "good" or "bad", but with billions of attempts.</p>
+  <pre class="mermaid">
+flowchart LR
+  S["Observation o_t<br/>405 numbers"] --> P["Actor network π(a|o)"]
+  P --> A["Action a_t<br/>21 joint offsets"]
+  A --> W["Isaac Sim<br/>10 physics steps"]
+  W --> R["Reward r_t"]
+  W --> S
+  W --> C["Critic V(s)<br/>sees privileged state"]
+  R --> U["PPO update"]
+  C --> U
+  U --> P
+  </pre>
+  <div class="tech"><b>Under the hood</b>
+    <p>Formally the task is a partially observed Markov decision process. The policy maximizes the expected discounted return <code>E[Σ γᵗ rₜ]</code> with γ = 0.95. The actor outputs a Gaussian over actions (mean from the network, one learned standard deviation shared across joints, initialized at 1.0); during testing the mean is used.</p>
+  </div>
+  <div class="why"><b>Why</b><p>Hand-writing a controller that balances, steps and swings a 23-joint humanoid within 0.5 s is impractical. RL discovers coordinated whole-body motion by optimization.</p></div>
+</section>
+
+<section id="sim"><span class="num">Chapter 3</span><h2>Robot and simulator</h2>
+  <ul>
+    <li><b>Robot:</b> Booster T1, 1.2 m, 23 joints. 21 are actuated by the policy (6 per leg, 4 per arm, 1 waist); 2 head joints are fixed. A paddle is mounted on the right hand; its contact point is 0.345 m along the hand link.</li>
+    <li><b>Simulator:</b> Isaac Sim 4.5 + Isaac Lab 2.2, PhysX on GPU, on one NVIDIA A40 (48 GB) rented through HIM Arena.</li>
+    <li><b>Timing:</b> physics step 2 ms; the policy acts every 10 physics steps, so it runs at <b>50 Hz</b>.</li>
+    <li><b>Ball:</b> 40 mm, 3.4 g, restitution 0.9, quadratic air drag (drag coefficient 0.4378, fitted by the PACE authors to real flights).</li>
+    <li><b>Scale:</b> 4,096 robots, each at its own table, simulated in parallel.</li>
+  </ul>
+  <div class="ours"><b>Our finding</b><p>PACE's config includes an optional 5 ms × 4 physics setting for faster runs. With it, our first robots learned about half as fast (training hit rate 2.4% vs 4.9% at iteration 500). A controlled test showed ball–paddle collisions behave the same at both step sizes, so the slowdown is in learning dynamics (the joint PD loop runs at 200 Hz instead of 500 Hz). Everything below uses 2 ms.</p></div>
+</section>
+
+<section id="see"><span class="num">Chapter 4</span><h2>What the robot senses</h2>
+  <p>Every 0.02 s the actor receives 81 numbers about the present moment, stacked with the previous 4 moments: 405 inputs in total. Stacking lets it infer speeds and accelerations.</p>
+  <div class="scroll"><table><thead><tr><th>Input</th><th class="n">Dims</th><th>Plain meaning</th><th>Training noise (±, uniform)</th></tr></thead><tbody>
+    <tr><td>Torso angular velocity</td><td class="n">3</td><td>How fast the torso rotates</td><td class="n">0.2 rad/s</td></tr>
+    <tr><td>Projected gravity</td><td class="n">3</td><td>Which way is down, in the torso frame</td><td class="n">0.05</td></tr>
+    <tr><td>Joint positions (vs default)</td><td class="n">21</td><td>Where each joint is</td><td class="n">0.01 rad</td></tr>
+    <tr><td>Joint velocities</td><td class="n">21</td><td>How fast each joint moves</td><td class="n">1.5 rad/s</td></tr>
+    <tr><td>Last action</td><td class="n">21</td><td>Previous command</td><td class="n">0</td></tr>
+    <tr><td>Ball position, robot position</td><td class="n">6</td><td>From motion capture, delayed 4–10 ms</td><td class="n">7 mm</td></tr>
+    <tr><td>Learned hitting-point forecast</td><td class="n">3</td><td>Where to hit (Chapter 6)</td><td class="n">0</td></tr>
+    <tr><td>Target base offset (x, y)</td><td class="n">2</td><td>Forecast − (0.1, −0.6) m − robot position: where to stand</td><td class="n">7 mm</td></tr>
+    <tr><td>Heading</td><td class="n">1</td><td>Robot yaw</td><td class="n">0.05</td></tr>
+    <tr><td><b>Per frame / × 5 history</b></td><td class="n"><b>81 / 405</b></td><td></td><td></td></tr>
+  </tbody></table></div>
+  <div class="why"><b>Why noise and delay</b><p>Real sensors are noisy and late. Training with uniform noise and a 2–5 physics-step perception delay makes the policy robust instead of dependent on perfect data it will never get on hardware.</p></div>
+</section>
+
+<section id="do"><span class="num">Chapter 5</span><h2>What the robot controls</h2>
+  <p>The actor outputs 21 numbers. Each becomes a joint target around a nominal pose, and a PD controller (a stiff virtual spring with damping) drives the joint toward it at 500 Hz.</p>
+  <p class="formula">q_target = q_default + 0.25 · a      (radians, a clipped at ±100)
+τ = K_p (q_target − q) − K_d q̇     (per joint, from the T1 actuator config)</p>
+  <div class="why"><b>Why position targets</b><p>Targets around a stable stance are far easier to learn than raw torques, and the 0.25 scale keeps early random actions small. The nominal pose holds the right arm raised, ready to swing.</p></div>
+</section>
+
+<section id="predict"><span class="num">Chapter 6</span><h2>Predicting the ball</h2>
+  <p>The robot has to start moving before the ball arrives, so PACE gives it a forecast of the ideal hitting point: the top of the ball's bounce on the robot's side.</p>
+  <div class="grid2">
+    <div class="box"><h3>Physics forecast ("oracle")</h3><p>Uses the simulator's true ball state and closed-form drag physics. Used for rewards and the critic only; it is not available on a real robot.</p></div>
+    <div class="box"><h3>Learned forecast</h3><p>An MLP (15 → 64 → 64 → 3) reads the last 5 ball positions and is trained to imitate the oracle (MSE, Adam, lr 5e-4, batch 1,024) during the first 20 iterations, then frozen. About 3 cm error. This is what the actor sees.</p></div>
+  </div>
+  <div class="tech"><b>Under the hood: the oracle</b>
+    <p>With quadratic drag constant k = ½ρC<sub>d</sub>A/m ≈ 0.134 m⁻¹, table height h = 0.78 m and g = 9.81:</p>
+    <p class="formula">time to bounce        t₁ = (v_z + √(v_z² + 2g(z − h))) / g
+vertical after bounce v_z' = −0.9 (v_z − g t₁)
+time to apex          t₂ = atan(v_z'·√(k/g)) / √(gk)
+apex height           z* = h + ln(1 + k v_z'²/g) / (2k)
+horizontal travel     s(T) = sign(v) · ln(1 + k|v|T) / k      (0.7 × speed after the bounce)</p>
+    <p>The predicted apex (x*, y*, z*) is the hitting point; x is clamped to ≤ −1.6 m so the target stays reachable. A target body position (x* − 0.1, y* + 0.6, 0.69 m) and a target body velocity 4 × (target − position), capped at 7 m/s, are derived from it. All three feed the reaching rewards.</p>
+  </div>
+  <div class="why"><b>Why</b><p>PACE's ablation shows that without the forecast the robot essentially never learns to hit. It turns a reactive problem into "get to this point by this time".</p></div>
+</section>
+
+<section id="rewards"><span class="num">Chapter 7</span><h2>The reward function</h2>
+  <p>The reward is a weighted sum of terms, computed every 0.02 s and multiplied by 0.02 (the step length) by Isaac Lab. Big terms reward the real goals; small dense terms guide early learning; penalties keep the motion safe and tidy.</p>
+  <div class="scroll"><table><thead><tr><th>Term</th><th class="n">Weight</th><th>Exact form</th></tr></thead><tbody>
+    <tr><td>Paddle contact</td><td class="n pos">+150</td><td>Once per serve: max over substeps of clip(1 − d/0.05, 0, 1), d = ball-to-paddle-center distance minus ball radius</td></tr>
+    <tr><td>Lands on opponent's table</td><td class="n pos">+100</td><td>1 at the step the ball touches the opponent's half after a paddle touch</td></tr>
+    <tr><td>Net clearance</td><td class="n pos">+100</td><td>At contact: predicted height at the net z<sub>net</sub>; exp(−|z<sub>net</sub> − 1.11 m| / 0.4)</td></tr>
+    <tr><td>Landing point</td><td class="n pos">+60</td><td>At contact: 3.0 − ‖predicted landing − (1.15, 0)‖ (m); can go negative</td></tr>
+    <tr><td>Body to target spot</td><td class="n pos">+5</td><td>exp(−max(‖p<sub>xy</sub> − p*<sub>xy</sub>‖, 0.05) / 0.5²), while the ball is incoming</td></tr>
+    <tr><td>Body velocity to target</td><td class="n pos">+5</td><td>exp(−max(‖v<sub>xy</sub> − v*<sub>xy</sub>‖, 0.1) / 1.2²)</td></tr>
+    <tr><td>Paddle to hitting point</td><td class="n pos">+2</td><td>exp(−max(‖p<sub>paddle</sub> − p*‖, 0.15) / 0.5²)</td></tr>
+    <tr class="hl"><td><b>Stroke bonus (ours)</b></td><td class="n pos">+3</td><td>Chapter 13</td></tr>
+    <tr><td>Fall / out of bounds</td><td class="n neg">−1000</td><td>On termination</td></tr>
+    <tr><td>Paddle head near body</td><td class="n neg">−100</td><td>Paddle within 0.3 m of the head</td></tr>
+    <tr><td>Non-foot contacts</td><td class="n neg">−80</td><td>Any body other than the feet touching something (&gt; 1 N)</td></tr>
+    <tr><td>Table proximity</td><td class="n neg">−20</td><td>Closer than 0.15 m to the table edge</td></tr>
+    <tr><td>Unstable support at hit</td><td class="n neg">−10</td><td>Feet not properly grounded when hitting</td></tr>
+    <tr><td>Feet too close</td><td class="n neg">−10 / −1.5</td><td>Under 0.15 m / 0.2 m apart</td></tr>
+    <tr><td>Foot orientation (each)</td><td class="n neg">−4</td><td>Feet not flat</td></tr>
+    <tr><td>Flight, stumble, slide, joint limits, tilt</td><td class="n neg">−2.5 … −1.5</td><td>Both feet airborne; lateral foot forces; foot sliding; limits; torso tilt</td></tr>
+    <tr><td>Bounce, spin, posture, smoothness, energy</td><td class="n neg">−1 … −1.25e−7</td><td>Vertical velocity, angular velocity, joint deviation from nominal, action rate, acceleration, power</td></tr>
+  </tbody></table></div>
+  <div class="why"><b>Why dense hints</b><p>Early on the robot almost never touches the ball, so a hit-only reward would give no learning signal. The forecast-based reaching terms reward progress every step; PACE's ablation shows removing them delays hitting by over 4,000 iterations.</p></div>
+</section>
+
+<section id="practice"><span class="num">Chapter 8</span><h2>Episodes and randomization</h2>
+  <div class="scroll"><table><thead><tr><th>Setting</th><th>Value</th></tr></thead><tbody>
+    <tr><td>Episode length</td><td>Up to 10 s and up to 5 serves; each serve times out after 1.8 s or when the ball hits the floor</td></tr>
+    <tr><td>Early termination</td><td>Torso below 0.5 m, or outside x ∈ [−3.6, −1.35] m, |y| &gt; 1.1 m</td></tr>
+    <tr><td>Serve velocity</td><td>v<sub>x</sub> −6.5 to −5.0, v<sub>y</sub> −0.8 to 0.4, v<sub>z</sub> 1.5 to 2.0 m/s; launch point ±0.1 m sideways</td></tr>
+    <tr><td>Start pose</td><td>x −0.6 to +0.02 m, y −0.6 to +0.8 m around (−1.6, 0); yaw ±0.3 rad; initial velocity ±0.2</td></tr>
+    <tr><td>Start joints</td><td>Leg and left-arm joints scaled 0.5–1.5×; right arm offset ±0.5 rad</td></tr>
+    <tr><td>Contact properties</td><td>Static friction 0.8–1.0, dynamic 0.5–0.8, restitution 0–0.005</td></tr>
+    <tr><td>Mass</td><td>Torso +U(−5, 5) kg</td></tr>
+    <tr><td>Pushes</td><td>Every 5–15 s, ±0.2 m/s</td></tr>
+    <tr><td>Perception delay</td><td>2–5 physics steps (4–10 ms), fixed per robot</td></tr>
+    <tr><td>Episode start</td><td>Random point in the episode, so the 4,096 robots are out of sync</td></tr>
+  </tbody></table></div>
+  <div class="why"><b>Why randomize</b><p>Variety forces a general skill instead of memorizing one serve, and is the main tool for transferring from simulation to a real robot. Desynchronized episodes keep each batch from being dominated by robots all at the same phase.</p></div>
+</section>
+
+<section id="critic"><span class="num">Chapter 9</span><h2>The critic</h2>
+  <p>Training uses two networks with the same shape (512 → 512 → 128, ELU). The <b>actor</b> plays. The <b>critic</b> estimates the value V(s), the return expected from the current state, and is used only during training. Because it is discarded afterwards, it is allowed to see privileged information.</p>
+  <div class="scroll"><table><thead><tr><th>Critic input</th><th class="n">Dims</th></tr></thead><tbody>
+    <tr><td>Everything proprioceptive the actor sees (spin, gravity, joints, velocities, last action)</td><td class="n">69</td></tr>
+    <tr><td>True ball position and velocity</td><td class="n">6</td></tr>
+    <tr><td>Oracle hitting point; paddle position; robot position; heading</td><td class="n">10</td></tr>
+    <tr><td>Target body offset; time to apex; serve and episode progress</td><td class="n">6</td></tr>
+    <tr><td>Ball touched own table; ball touched paddle</td><td class="n">2</td></tr>
+    <tr><td>Torso linear velocity; foot contacts</td><td class="n">5</td></tr>
+    <tr class="hl"><td><b>Ours:</b> stroke reference gap now and +0.1 s (9 + 9) and an active flag</td><td class="n">19</td></tr>
+    <tr><td><b>Per frame / × 5 history</b></td><td class="n"><b>117 / 585</b></td></tr>
+  </tbody></table></div>
+  <div class="why"><b>Why an asymmetric actor-critic</b><p>A critic that knows the true future makes advantage estimates (Chapter 10) far less noisy, so learning is faster and steadier, while the actor still depends only on information a real robot has.</p></div>
+</section>
+
+<section id="ppo"><span class="num">Chapter 10</span><h2>PPO, step by step</h2>
+  <ol class="plain">
+    <li><b>Collect:</b> all 4,096 robots act for 24 steps (0.48 s): 98,304 transitions.</li>
+    <li><b>Advantages:</b> with generalized advantage estimation (λ = 0.95), compute how much better each action turned out than the critic expected.</li>
+    <li><b>Update:</b> 5 passes over the data in 4 mini-batches of 24,576, maximizing the clipped PPO objective while fitting the critic.</li>
+    <li><b>Adapt:</b> if the policy moved too far (KL divergence above 0.01), shrink the learning rate; if too little, grow it.</li>
+  </ol>
+  <div class="tech"><b>Under the hood</b>
+    <p class="formula">δₜ   = rₜ + γ V(sₜ₊₁) − V(sₜ)                γ = 0.95
+Âₜ   = Σₗ (γλ)ˡ δₜ₊ₗ                          λ = 0.95
+ρₜ   = π_new(aₜ|oₜ) / π_old(aₜ|oₜ)
+L    = −E[min(ρₜÂₜ, clip(ρₜ, 0.8, 1.2)Âₜ)] + 1.0·L_value − 0.006·entropy</p>
+    <p>Value loss is clipped too; gradients are clipped to norm 1.0; learning rate starts at 1e−3 and adapts to a KL target of 0.01. γ = 0.95 means the robot cares about roughly the next 20 steps (0.4 s), the time scale of one stroke.</p>
+  </div>
+  <div class="why"><b>Why PPO</b><p>It is the standard for massively parallel robot RL: on-policy, stable, and simple. The clip keeps each update small so the policy doesn't collapse.</p></div>
+</section>
+
+<section id="human"><span class="num">Chapter 11</span><h2>Human motion pipeline</h2>
+  <p>HIM Arena recorded about 33 minutes of a right-handed player in a Rokoko motion-capture suit. We converted it into robot strokes.</p>
+  <pre class="mermaid">
+flowchart LR
+  M["Rokoko FBX<br/>61 bones, 30 fps"] --> B["Blender<br/>global joint poses"]
+  B --> G["GMR / mink IK<br/>Booster T1 poses"]
+  G --> C["Stroke cutting<br/>1,040 forehands"]
+  C --> V["Conditional VAE<br/>+3,404 strokes"]
+  V --> L["Library<br/>4,444 × 54 frames × 9 joints"]
+  </pre>
+  <div class="tech"><b>Under the hood</b>
+    <ul>
+      <li><b>Export:</b> headless Blender reads each FBX and records every bone's world position and rotation per frame. Frame 0 is a T-pose.</li>
+      <li><b>Convention change:</b> GMR expects SMPL-X–style rotations. Each bone's rotation is expressed relative to its T-pose and composed with SMPL-X's rest rotation: R'ₜ = Rₜ R₀⁻¹ · R<sub>x</sub>(90°).</li>
+      <li><b>Retargeting:</b> GMR solves inverse kinematics (mink, DAQP solver) on the T1 model in two passes per frame. It matches pelvis, spine, hips, knees, feet, shoulders and the paddle-hand wrist (position weight 20 then 40), with body lengths scaled 0.6 (legs, torso) and 0.7 (arms) for a 1.75 m human.</li>
+      <li><b>Stroke detection:</b> right-hand speed from a Savitzky–Golay derivative (window 7, order 2); peaks above 1.5 m/s with prominence 0.8, at least 0.4 s apart; forehand side only; frames with high IK error discarded.</li>
+      <li><b>Windows:</b> −0.54 s to +0.52 s around each peak, resampled to 50 Hz: 54 frames of 9 upper-body joints (right shoulder pitch and roll, right elbow pitch and yaw, waist, left arm 4).</li>
+      <li><b>Contact key:</b> forward kinematics gives the paddle point at the peak frame, expressed relative to the torso in the torso's heading frame. Mean key ≈ (0.41, −0.32, −0.11) m: forward, to the right, slightly below the chest.</li>
+    </ul>
+  </div>
+  <figure><video src="videos/rally.mp4" controls muted loop playsinline preload="metadata" style="aspect-ratio:960/400"></video>
+    <figcaption>The person (left) and the retargeted T1 (right), real time. Flagged moments are strokes that entered the library.</figcaption></figure>
+</section>
+
+<section id="vae"><span class="num">Chapter 12</span><h2>The motion VAE</h2>
+  <p>The human mostly hit low, but the short robot often needs higher contact points. A conditional variational autoencoder learned the style of the real strokes and generated new ones for chosen contact points (the SMASH paper's augmentation idea).</p>
+  <div class="tech"><b>Under the hood</b>
+    <ul>
+      <li><b>Condition c:</b> the contact key (3) plus the stroke's first frame (9), normalized per joint.</li>
+      <li><b>Encoder:</b> [54×9 trajectory, c] → 256 → 256 → (μ, log σ²) of a 16-dimensional latent z. <b>Decoder:</b> [z, c] → 256 → 256 → 54×9. ELU, dropout 0.1.</li>
+      <li><b>Loss:</b> reconstruction MSE + β·KL + 10 × mismatch in second differences (smoothness). β follows a cyclic schedule (4 cycles up to 0.01) to avoid posterior collapse. AdamW, lr 1e−3, weight decay 1e−3, 20,000 steps of batch 256.</li>
+      <li><b>Generation:</b> 15,000 samples with z ~ N(0, I) and contact keys spread 1.5× wider than the real ones plus noise.</li>
+      <li><b>Filtering:</b> joint limits (±0.15 rad tolerance, then clipped); jerk no worse than 1.5× the real data's 99th percentile; forward-kinematics contact point within 15 cm of the requested one. 3,404 survived, each keyed by its actual FK contact point.</li>
+    </ul>
+  </div>
+  <div class="why"><b>Why</b><p>Motion matching only helps if the library covers the contact points the robot needs. With the VAE strokes, the robot's real contact points were 2–4 cm from a library stroke instead of 8–12 cm.</p></div>
+</section>
+
+<section id="bonus"><span class="num">Chapter 13</span><h2>The stroke bonus</h2>
+  <p>The human motion enters training as one extra reward term (plus 19 critic inputs). Rewards, actor observations and actions are otherwise PACE's.</p>
+  <h3>1. Match</h3>
+  <p>Each step, the oracle hitting point is converted into the torso-heading frame and compared with all 4,444 library keys (Euclidean distance on GPU); the nearest stroke is selected. This repeats every step while the ball is incoming, so the choice tracks the forecast.</p>
+  <h3>2. Time</h3>
+  <p class="formula">frame = clamp(27 − round(t_apex / 0.02), 0, 27)      before contact
+frame = 27, 28, …, 53                                after a real paddle hit</p>
+  <h3>3. Score</h3>
+  <p class="formula">r_stroke = exp( −Σⱼ wⱼ (qⱼ − q_ref,ⱼ)² / 0.6² ) · gate        weight 3.0</p>
+  <div class="scroll"><table><thead><tr><th>Joint</th><th class="n">wⱼ</th><th>Reason</th></tr></thead><tbody>
+    <tr><td>Right shoulder pitch, roll; right elbow pitch</td><td class="n">1.0</td><td>The stroke</td></tr>
+    <tr><td>Waist</td><td class="n">0.5</td><td>Trunk rotation</td></tr>
+    <tr><td>Left shoulder pitch, roll; left elbow pitch</td><td class="n">0.3</td><td>Balance arm</td></tr>
+    <tr><td>Both elbow-yaw (forearm twist)</td><td class="n">0</td><td>Free to aim the paddle face (SMASH excludes the wrist the same way)</td></tr>
+    <tr><td>Legs, base pose</td><td>—</td><td>Not tracked; footwork is PACE's</td></tr>
+  </tbody></table></div>
+  <h3>4. Gate</h3>
+  <p class="formula">gate = 1    if −0.3 s ≤ τ ≤ 0 and no hit yet          (the swing)
+gate = 2    if 0 &lt; τ ≤ 0.2 s after a real hit        (follow-through)
+gate = 0    otherwise                                   τ = time relative to contact</p>
+  <h3>5. Critic-only reference</h3>
+  <p>The critic receives (q_ref − q) at the current frame and 5 frames (0.1 s) ahead, plus the active flag. The actor's 405 inputs are unchanged.</p>
+  <div class="why"><b>Why each piece</b><ul>
+    <li><b>Matching and timing</b> make the reference the right stroke at the right moment.</li>
+    <li><b>Gating</b> closes a loophole found with the always-on version, where the robot farmed style points instead of hitting.</li>
+    <li><b>Weight 3</b> was chosen to sit next to PACE's dense hints (2–5) and far below a hit (150), so it shapes rather than overrides.</li>
+    <li><b>Critic-only</b> keeps the deployed controller identical in what it needs to PACE's.</li>
+  </ul></div>
+</section>
+
+<section id="share"><span class="num">Chapter 14</span><h2>How much the human motion actually counted</h2>
+  <p>The training logs record each reward term's average contribution per episode. For the final robot, the stroke bonus was a tiny part of the total.</p>
+  <div class="scroll"><table><thead><tr><th>Iterations</th><th class="n">Stroke bonus</th><th class="n">All positive rewards</th><th class="n">Share</th></tr></thead><tbody>
+    <tr><td>800–1,200</td><td class="n">0.0036</td><td class="n">1.17</td><td class="n">0.3%</td></tr>
+    <tr><td>1,800–2,200</td><td class="n">0.0045</td><td class="n">2.44</td><td class="n">0.2%</td></tr>
+    <tr><td>2,800–3,200</td><td class="n">0.0013</td><td class="n">3.77</td><td class="n">0.03%</td></tr>
+    <tr><td>4,800–5,200</td><td class="n">0.0005</td><td class="n">5.19</td><td class="n">0.01%</td></tr>
+    <tr><td>7,400–7,800</td><td class="n">0.0003</td><td class="n">5.34</td><td class="n">0.006%</td></tr>
+  </tbody></table></div>
+  <p>At iterations 7,400–7,800 the positive reward breaks down like this:</p>
+  <div class="box" role="img" aria-label="Bar chart of reward contributions at iterations 7,400 to 7,800">
+    <div class="bar"><span>Landing point</span><span class="track"><span class="fill" style="width:100%;display:block"></span></span><span class="val">1.270</span></div>
+    <div class="bar"><span>Contact</span><span class="track"><span class="fill" style="width:70.8%;display:block"></span></span><span class="val">0.899</span></div>
+    <div class="bar"><span>Body velocity</span><span class="track"><span class="fill" style="width:67.2%;display:block"></span></span><span class="val">0.854</span></div>
+    <div class="bar"><span>Lands on table</span><span class="track"><span class="fill" style="width:62.6%;display:block"></span></span><span class="val">0.795</span></div>
+    <div class="bar"><span>Net clearance</span><span class="track"><span class="fill" style="width:56.4%;display:block"></span></span><span class="val">0.717</span></div>
+    <div class="bar"><span>Body to target</span><span class="track"><span class="fill" style="width:47%;display:block"></span></span><span class="val">0.597</span></div>
+    <div class="bar"><span>Paddle to point</span><span class="track"><span class="fill" style="width:16.7%;display:block"></span></span><span class="val">0.212</span></div>
+    <div class="bar"><span><b>Stroke bonus</b></span><span class="track"><span class="fill hum" style="width:0.5%;min-width:2px;display:block"></span></span><span class="val">0.0003</span></div>
+  </div>
+  <div class="tech"><b>Why so small</b>
+    <ul>
+      <li><b>Short window:</b> the gate is open for only about 0.5 s of each serve, roughly a quarter of the time.</li>
+      <li><b>Steep exponential:</b> with σ = 0.6 rad and several weighted joints, a stroke that differs by about 0.3 rad per joint already scores only around a third, and larger differences score near zero. Once the robot's own swing diverged from the human style, the bonus fell close to zero.</li>
+      <li><b>Competition:</b> hitting and returning are worth hundreds of times more, so the optimizer has no reason to give up any hitting to match the human.</li>
+    </ul>
+  </div>
+  <div class="ours"><b>What this means</b><p>In this configuration the human motion acted as a light early nudge (the swing at iteration 1,000 was 16% closer to human strokes for both stroke-bonus seeds), not as a major training signal. That is why the robot plays as well as plain PACE, but not better, and why the styles converge later. The earlier always-on version had the opposite problem: its stroke reward grew to over 10× the contact reward and pulled the robot away from hitting. To make human motion a strong signal, the next steps would be a larger weight (on the order of 30–100), a wider gate, or a learned style reward (an AMP-style discriminator).</p></div>
+</section>
+
+<section id="lessons"><span class="num">Chapter 15</span><h2>What went wrong, and fixes</h2>
+  <div class="scroll"><table><thead><tr><th>Problem</th><th>Fix</th></tr></thead><tbody>
+    <tr><td>PACE's code didn't run on the IsaacLab version its README names (2.1)</td><td>IsaacLab 2.2 (the APIs the code uses), torch 2.5.1, plus an air-drag fallback</td></tr>
+    <tr><td>Robots learned half as fast as the paper</td><td>Optional 5 ms physics replaced with PACE's 2 ms default</td></tr>
+    <tr><td>Always-on stroke reward dominated hitting</td><td>Gated to the swing and real hits</td></tr>
+    <tr><td>Human data covered mostly low contacts</td><td>VAE augmentation toward higher contacts</td></tr>
+    <tr><td>Machines hit time limits; a cloud disk failed</td><td>Resume from checkpoints (optimizer and predictor state saved); same-seed training is bit-for-bit reproducible, so resumed curves are valid</td></tr>
+    <tr><td>Isaac Sim cameras unavailable on GPU machines without graphics</td><td>Log every simulated state; replay in MuJoCo for video</td></tr>
+  </tbody></table></div>
+</section>
+
+<section id="run"><span class="num">Chapter 16</span><h2>The training run</h2>
+  <ul>
+    <li><b>Budget:</b> 10,000 iterations × 98,304 transitions ≈ 983 million decisions ≈ 228 days of play.</li>
+    <li><b>Compute:</b> one A40 per run via HIM Arena, about 8–11 iterations per minute alone on the GPU; about 17 GPU hours in total.</li>
+    <li><b>Schedule:</b> three stretches (0–3,500, 3,500–7,800, 7,800–10,000), each resumed from the last checkpoint; seed 42. After each resume, the logged hit rate dips briefly because every robot restarts at once, then recovers within about 100 iterations.</li>
+  </ul>
+  <div class="scroll"><table><thead><tr><th>Iteration</th><th class="n">Test hit</th><th class="n">Test return</th><th>Phase</th></tr></thead><tbody>
+    <tr><td>1,000</td><td class="n">21.0%</td><td class="n">0.0%</td><td>Learning to stand, step and reach</td></tr>
+    <tr><td>2,000</td><td class="n">73.0%</td><td class="n">21.7%</td><td>Hitting takes off</td></tr>
+    <tr><td>3,000</td><td class="n">96.1%</td><td class="n">72.1%</td><td>Returns take off</td></tr>
+    <tr><td>5,000</td><td class="n">98.3%</td><td class="n">94.0%</td><td>Near plateau</td></tr>
+    <tr><td>10,000</td><td class="n">98.8%</td><td class="n">96.9%</td><td>Final</td></tr>
+  </tbody></table></div>
+  <p style="font-size:14.5px;color:var(--ink-3)">2,500 test serves per checkpoint, mixed serve range.</p>
+</section>
+
+<section id="test"><span class="num">Chapter 17</span><h2>Testing</h2>
+  <p>Final testing uses PACE's own <code>eval.py</code>, unmodified: fixed start pose, sensor noise on, pushes off, the first 2 × (number of robots) serves skipped as warm-up. A <b>hit</b> is the paddle-contact event; a <b>return</b> is the ball landing on the opponent's half after a paddle touch. The paper's four serve categories were run with as many serves as the paper used.</p>
+  <div class="scroll"><table><thead><tr><th>Serves</th><th class="n">Our hit</th><th class="n">Our return</th><th class="n">Paper hit</th><th class="n">Paper return</th></tr></thead><tbody>
+    <tr><td>Long, −6.5 to −6.2 m/s (42,237)</td><td class="n">97.4%</td><td class="n">95.1%</td><td class="n">96.1%</td><td class="n">92.3%</td></tr>
+    <tr><td>Mid-long, −6.2 to −5.7 (42,450)</td><td class="n">97.8%</td><td class="n">96.6%</td><td class="n">97.0%</td><td class="n">95.0%</td></tr>
+    <tr><td>Short, −5.7 to −5.2 (92,613)</td><td class="n">99.99%</td><td class="n">98.5%</td><td class="n">99.3%</td><td class="n">94.8%</td></tr>
+    <tr><td>Mixed, −6.5 to −5.2 (89,263)</td><td class="n">98.5%</td><td class="n">96.8%</td><td class="n">97.6%</td><td class="n">94.1%</td></tr>
+  </tbody></table></div>
+  <div class="why"><b>Reading these fairly</b><p>Scoring is PACE's own. Our robot runs in our subclass of PACE's environment (its critic used the stroke reference), the single-category serve ranges were added as configs from the paper's Table II, and it is one trained robot, so seed-to-seed spread is unmeasured. A controlled test of PACE with and without the stroke bonus shows the performance gain comes from our PACE build, not from the human motion (Chapter 14).</p></div>
+</section>
+
+<section id="words"><span class="num">Chapter 18</span><h2>Glossary</h2>
+  <dl>
+    <div><dt>Actor / policy</dt><dd>The network that controls the robot: 405 observation numbers in, 21 joint offsets out.</dd></div>
+    <div><dt>Critic / value function</dt><dd>A training-only network estimating expected future reward from privileged state.</dd></div>
+    <div><dt>Advantage</dt><dd>How much better an action turned out than the critic expected; positive means "do more of this".</dd></div>
+    <div><dt>PPO</dt><dd>Proximal Policy Optimization: improves the policy in small clipped steps.</dd></div>
+    <div><dt>GAE</dt><dd>Generalized advantage estimation: blends short- and long-horizon advantage estimates (λ = 0.95).</dd></div>
+    <div><dt>Iteration</dt><dd>One collect-and-update cycle: 4,096 robots × 24 steps, then 5 epochs of updates.</dd></div>
+    <div><dt>Oracle</dt><dd>The exact physics forecast of the ball, available only in simulation.</dd></div>
+    <div><dt>Domain randomization</dt><dd>Varying physics, serves, noise and delays during training so the skill generalizes.</dd></div>
+    <div><dt>Retargeting</dt><dd>Inverse kinematics that finds the robot pose closest to a human pose.</dd></div>
+    <div><dt>Motion matching</dt><dd>Picking the library motion whose key (here, the contact point) is closest to the current need.</dd></div>
+    <div><dt>VAE</dt><dd>Variational autoencoder: learns a compact latent space of examples and samples new ones from it.</dd></div>
+    <div><dt>AMP</dt><dd>Adversarial Motion Priors: a style reward from a discriminator trained to tell robot motion from human motion.</dd></div>
+    <div><dt>Seed</dt><dd>The starting value for all randomness; same seed and settings give identical training here.</dd></div>
+  </dl>
+</section>
+</main>
+</div>

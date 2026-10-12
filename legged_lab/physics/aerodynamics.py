@@ -90,6 +90,14 @@ class AeroForceField:
         self.last_torques_w = T_w.detach()
 
         # Expand to (num_envs, num_bodies=1, 3) and stage in GLOBAL frame
-        ball_asset.set_external_force_and_torque(
-            forces=F_w.unsqueeze(1), torques=T_w.unsqueeze(1), is_global=True
-        )
+        try:
+            ball_asset.set_external_force_and_torque(
+                forces=F_w.unsqueeze(1), torques=T_w.unsqueeze(1), is_global=True
+            )
+        except TypeError:
+            # Isaac Lab 2.1.0 has no `is_global`; forces are applied in the body frame there.
+            from isaaclab.utils.math import quat_rotate_inverse
+            q = ball_asset.data.root_quat_w
+            ball_asset.set_external_force_and_torque(
+                forces=quat_rotate_inverse(q, F_w).unsqueeze(1), torques=quat_rotate_inverse(q, T_w).unsqueeze(1)
+            )

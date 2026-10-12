@@ -1,0 +1,4 @@
+D_long | t1_tt_mpg_eval_long | target 42181 | [Play] Success 40172/42237 (0.951) | Hits 41124/42237 (0.974)
+D_mid | t1_tt_mpg_eval_mid | target 41390 | [Play] Success 41002/42450 (0.966) | Hits 41497/42450 (0.978)
+D_short | t1_tt_mpg_eval_short | target 92601 | [Play] Success 91222/92613 (0.985) | Hits 92603/92613 (1.000)
+D_mixed | t1_tt_mpg_eval | target 88016 | [Play] Success 86387/89263 (0.968) | Hits 87927/89263 (0.985)

@@ -1,0 +1,253 @@
+[INFO][AppLauncher]: Using device: cuda:0
+[INFO][AppLauncher]: Loading experience file: /root/pace/IsaacLab/apps/isaacsim_4_5/isaaclab.python.headless.kit
+[Warning] [simulation_app.simulation_app] Modules: ['omni.kit_app'] were loaded before SimulationApp was started and might not be loaded correctly.
+[Warning] [simulation_app.simulation_app] Please check to make sure no extra omniverse or pxr modules are imported before the call to SimulationApp(...)
+Loading user config located at: '/root/isaac45/lib/python3.10/site-packages/omni/data/Kit/Isaac-Sim/4.5/user.config.json'
+[Info] [carb] Logging to file: /root/isaac45/lib/python3.10/site-packages/omni/logs/Kit/Isaac-Sim/4.5/kit_20261007_025313.log
+2026-10-07 02:53:13 [0ms] [Warning] [omni.kit.app.plugin] No crash reporter present, dumps uploading isn't available.
+2026-10-07 02:53:13 [4ms] [Warning] [omni.ext.plugin] [ext: rendering_modes] Extensions config 'extension.toml' doesn't exist '/root/pace/IsaacLab/apps/isaacsim_4_5/rendering_modes' or '/root/pace/IsaacLab/apps/isaacsim_4_5/rendering_modes/config'
+2026-10-07 02:53:13 [208ms] [Warning] [omni.usd_config.extension] Enable omni.materialx.libs extension to use MaterialX
+2026-10-07 02:53:14 [350ms] [Warning] [omni.platforminfo.plugin] failed to open the default display.  Can't verify X Server version.
+2026-10-07 02:53:14 [641ms] [Warning] [omni.datastore] OmniHub is inaccessible
+2026-10-07 02:53:14 [680ms] [Warning] [omni.isaac.dynamic_control] omni.isaac.dynamic_control is deprecated as of Isaac Sim 4.5. No action is needed from end-users.
+
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 570.195.03    | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|     |                                  |        |     |            | Bus-ID    |            |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA A40                       | Yes: 0 |     | 46068   MB | 10de      | 0          |
+|     |                                  |        |     |            | 2235      | f3c4d777.. |
+|     |                                  |        |     |            | d1        |            |
+|=============================================================================================|
+| OS: 24.04.3 LTS (Noble Numbat) ubuntu, Version: 24.04.3, Kernel: 6.8.0-65-generic
+| Processor: Intel(R) Xeon(R) Gold 6342 CPU @ 2.80GHz
+| Bare Metal Cores: 48 | Bare Metal Logical Cores: 96
+| Core Usage Quota: 7.65
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 47683 | Free Memory: 23979
+| Total Page/Swap (MB): 0 | Free Page/Swap: 0
+|---------------------------------------------------------------------------------------------|
+2026-10-07 02:53:18 [4,975ms] [Warning] [gpu.foundation.plugin] ECC is enabled on physical device 0
+2026-10-07 02:53:18 [4,976ms] [Warning] [gpu.foundation.plugin] IOMMU is enabled.
+[TTEnvMP] motion library /root/pace/data/stroke_lib/stroke_lib_vae.npz: 4444 strokes, H=54, contact=27
+Setting seed: 42
+2026-10-07 02:53:19 [6,185ms] [Warning] [isaaclab.sim.utils] [Compat] Isaac Sim < 5.0 does not support thread-local stage contexts. Skipping use_stage().
+2026-10-07 02:53:19 [6,197ms] [Warning] [isaaclab.terrains.terrain_importer] Visual material specified for ground plane but no diffuse color found. Using default color: (0.0, 0.0, 0.0)
+2026-10-07 02:53:20 [7,039ms] [Warning] [isaaclab.sim.utils] [Compat] Isaac Sim < 5.0 does not support thread-local stage contexts. Skipping use_stage().
+2026-10-07 02:53:21 [7,395ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPreviewSurface.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-10-07 02:53:21 [7,396ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdUVTexture.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-10-07 02:53:21 [7,396ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_float.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-10-07 02:53:21 [7,397ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_float2.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-10-07 02:53:21 [7,397ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_float3.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-10-07 02:53:21 [7,397ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_float4.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-10-07 02:53:21 [7,398ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_int.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-10-07 02:53:21 [7,398ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_string.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-10-07 02:53:21 [7,398ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_normal.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-10-07 02:53:21 [7,399ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_point.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-10-07 02:53:21 [7,399ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_vector.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-10-07 02:53:21 [7,399ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdPrimvarReader_matrix.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-10-07 02:53:21 [7,399ms] [Warning] [omni.usd] Warning: in GetNodeDiscoveryResults at line 136 of /builds/omniverse/usd-ci/USD/pxr/usd/usdShade/shaderDefUtils.cpp -- Unable to resolve info:sourceAsset </UsdTransform2d.info:mdl:sourceAsset> with value @UsdPreviewSurface.mdl@.
+
+2026-10-07 02:53:22 [9,316ms] [Warning] [isaaclab.assets.articulation.articulation] Spatial tendons are not supported in Isaac Sim < 5.0: patching spatial-tendon getter and setter to use dummy value
+2026-10-07 02:53:23 [9,539ms] [Warning] [isaaclab.assets.articulation.articulation] Not all actuators are configured! Total number of actuated joints not equal to number of joints available: 21 != 23.
+
+[INFO] Loading experiment from directory: /root/pace/pace_repo/logs/t1_table_tennis_mpg
+agent_cfg.load_run:final
+agent_cfg.load_checkpoint:model_9999.pt
+
+Actor MLP: Sequential(
+  (0): Linear(in_features=405, out_features=512, bias=True)
+  (1): ELU(alpha=1.0)
+  (2): Linear(in_features=512, out_features=512, bias=True)
+  (3): ELU(alpha=1.0)
+  (4): Linear(in_features=512, out_features=128, bias=True)
+  (5): ELU(alpha=1.0)
+  (6): Linear(in_features=128, out_features=21, bias=True)
+)
+Critic MLP: Sequential(
+  (0): Linear(in_features=585, out_features=512, bias=True)
+  (1): ELU(alpha=1.0)
+  (2): Linear(in_features=512, out_features=512, bias=True)
+  (3): ELU(alpha=1.0)
+  (4): Linear(in_features=512, out_features=128, bias=True)
+  (5): ELU(alpha=1.0)
+  (6): Linear(in_features=128, out_features=1, bias=True)
+)
+[Predictor] Loaded predictor weights from checkpoint; predictions enabled.
+2026-10-07 02:53:25 [12,025ms] [Warning] [isaaclab.assets.rigid_object.rigid_object] The external wrench frame has been changed from False to True. This may lead to unexpected behavior.
+[Predictor] Not enough history yet (have 1, need 5).
+[Predictor] First prediction sample: [-1.6910368 -0.293714   1.0909448]
+[TTEnv] update_prediction received, first env: [-1.6910368 -0.293714   1.0909448]
+[Play] Success 0/0 (0.000) | Hits 0/0 (0.000)
+[Play] Success 0/0 (0.000) | Hits 0/0 (0.000)
+[Play] Success 0/0 (0.000) | Hits 0/0 (0.000)
+[Play] Success 0/0 (0.000) | Hits 0/0 (0.000)
+[Play] Success 928/933 (0.995) | Hits 933/933 (1.000)
+[Play] Success 1081/1086 (0.995) | Hits 1086/1086 (1.000)
+[Play] Success 2034/2047 (0.994) | Hits 2047/2047 (1.000)
+[Play] Success 2254/2271 (0.993) | Hits 2271/2271 (1.000)
+[Play] Success 3054/3073 (0.994) | Hits 3073/3073 (1.000)
+[Play] Success 3994/4056 (0.985) | Hits 4056/4056 (1.000)
+[Play] Success 4125/4190 (0.984) | Hits 4190/4190 (1.000)
+[Play] Success 5052/5120 (0.987) | Hits 5120/5120 (1.000)
+[Play] Success 5598/5669 (0.987) | Hits 5669/5669 (1.000)
+[Play] Success 6093/6164 (0.988) | Hits 6164/6164 (1.000)
+[Play] Success 7079/7155 (0.989) | Hits 7155/7155 (1.000)
+[Play] Success 7235/7314 (0.989) | Hits 7314/7314 (1.000)
+[Play] Success 8110/8193 (0.990) | Hits 8193/8193 (1.000)
+[Play] Success 8830/8965 (0.985) | Hits 8965/8965 (1.000)
+[Play] Success 9119/9268 (0.984) | Hits 9268/9268 (1.000)
+[Play] Success 10081/10236 (0.985) | Hits 10236/10236 (1.000)
+[INFO] Saved evaluation results to: /root/pace/pace_repo/logs/t1_table_tennis_mpg/final/eval_result/eval_results.csv (10236 records)
+[Play] Success 10393/10551 (0.985) | Hits 10551/10551 (1.000)
+[Play] Success 11114/11274 (0.986) | Hits 11274/11274 (1.000)
+[Play] Success 12052/12215 (0.987) | Hits 12215/12215 (1.000)
+[Play] Success 12240/12404 (0.987) | Hits 12404/12404 (1.000)
+[Play] Success 13145/13312 (0.987) | Hits 13312/13312 (1.000)
+[Play] Success 13632/13840 (0.985) | Hits 13840/13840 (1.000)
+[Play] Success 14138/14363 (0.984) | Hits 14363/14363 (1.000)
+[Play] Success 15079/15312 (0.985) | Hits 15312/15312 (1.000)
+[Play] Success 15340/15578 (0.985) | Hits 15577/15578 (1.000)
+[Play] Success 16147/16388 (0.985) | Hits 16387/16388 (1.000)
+[Play] Success 16897/17140 (0.986) | Hits 17139/17140 (1.000)
+[Play] Success 17244/17487 (0.986) | Hits 17486/17487 (1.000)
+[Play] Success 18167/18412 (0.987) | Hits 18411/18412 (1.000)
+[Play] Success 18501/18778 (0.985) | Hits 18777/18778 (1.000)
+[Play] Success 19172/19479 (0.984) | Hits 19478/19479 (1.000)
+[Play] Success 20006/20314 (0.985) | Hits 20313/20314 (1.000)
+[Play] Success 20325/20633 (0.985) | Hits 20632/20633 (1.000)
+[Play] Success 21188/21500 (0.985) | Hits 21499/21500 (1.000)
+[Play] Success 21763/22078 (0.986) | Hits 22077/22078 (1.000)
+[Play] Success 22270/22586 (0.986) | Hits 22585/22586 (1.000)
+[INFO] Saved evaluation results to: /root/pace/pace_repo/logs/t1_table_tennis_mpg/final/eval_result/eval_results.csv (22586 records)
+[Play] Success 23161/23480 (0.986) | Hits 23479/23480 (1.000)
+[Play] Success 23451/23790 (0.986) | Hits 23789/23790 (1.000)
+[Play] Success 24215/24584 (0.985) | Hits 24583/24584 (1.000)
+[Play] Success 24891/25263 (0.985) | Hits 25262/25263 (1.000)
+[Play] Success 25331/25705 (0.985) | Hits 25704/25705 (1.000)
+[Play] Success 26203/26580 (0.986) | Hits 26579/26580 (1.000)
+[Play] Success 26655/27036 (0.986) | Hits 27035/27036 (1.000)
+[Play] Success 27297/27682 (0.986) | Hits 27681/27682 (1.000)
+[Play] Success 28082/28470 (0.986) | Hits 28469/28470 (1.000)
+[Play] Success 28435/28835 (0.986) | Hits 28834/28835 (1.000)
+[Play] Success 29244/29675 (0.985) | Hits 29674/29675 (1.000)
+[Play] Success 29805/30242 (0.986) | Hits 30240/30242 (1.000)
+[Play] Success 30344/30785 (0.986) | Hits 30782/30785 (1.000)
+[Play] Success 31169/31613 (0.986) | Hits 31610/31613 (1.000)
+[Play] Success 31589/32035 (0.986) | Hits 32032/32035 (1.000)
+[Play] Success 32332/32783 (0.986) | Hits 32780/32783 (1.000)
+[Play] Success 33005/33461 (0.986) | Hits 33458/33461 (1.000)
+[Play] Success 33442/33913 (0.986) | Hits 33910/33913 (1.000)
+[Play] Success 34223/34728 (0.985) | Hits 34725/34728 (1.000)
+[Play] Success 34736/35246 (0.986) | Hits 35243/35246 (1.000)
+[INFO] Saved evaluation results to: /root/pace/pace_repo/logs/t1_table_tennis_mpg/final/eval_result/eval_results.csv (35246 records)
+[Play] Success 35370/35883 (0.986) | Hits 35879/35883 (1.000)
+[Play] Success 36099/36615 (0.986) | Hits 36611/36615 (1.000)
+[Play] Success 36560/37079 (0.986) | Hits 37075/37079 (1.000)
+[Play] Success 37337/37857 (0.986) | Hits 37853/37857 (1.000)
+[Play] Success 37941/38461 (0.986) | Hits 38457/38461 (1.000)
+[Play] Success 38466/39001 (0.986) | Hits 38997/39001 (1.000)
+[Play] Success 39168/39745 (0.985) | Hits 39741/39745 (1.000)
+[Play] Success 39669/40252 (0.986) | Hits 40248/40252 (1.000)
+[Play] Success 40375/40960 (0.986) | Hits 40956/40960 (1.000)
+[Play] Success 41025/41612 (0.986) | Hits 41608/41612 (1.000)
+[Play] Success 41554/42143 (0.986) | Hits 42139/42143 (1.000)
+[Play] Success 42301/42893 (0.986) | Hits 42889/42893 (1.000)
+[Play] Success 42873/43467 (0.986) | Hits 43463/43467 (1.000)
+[Play] Success 43485/44087 (0.986) | Hits 44083/44087 (1.000)
+[Play] Success 44128/44762 (0.986) | Hits 44758/44762 (1.000)
+[Play] Success 44660/45304 (0.986) | Hits 45300/45304 (1.000)
+[Play] Success 45371/46017 (0.986) | Hits 46013/46017 (1.000)
+[Play] Success 45976/46624 (0.986) | Hits 46620/46624 (1.000)
+[Play] Success 46572/47220 (0.986) | Hits 47216/47220 (1.000)
+[Play] Success 47275/47925 (0.986) | Hits 47921/47925 (1.000)
+[INFO] Saved evaluation results to: /root/pace/pace_repo/logs/t1_table_tennis_mpg/final/eval_result/eval_results.csv (47925 records)
+[Play] Success 47841/48495 (0.987) | Hits 48491/48495 (1.000)
+[Play] Success 48483/49148 (0.986) | Hits 49144/49148 (1.000)
+[Play] Success 49074/49766 (0.986) | Hits 49762/49766 (1.000)
+[Play] Success 49646/50354 (0.986) | Hits 50349/50354 (1.000)
+[Play] Success 50333/51047 (0.986) | Hits 51042/51047 (1.000)
+[Play] Success 50927/51644 (0.986) | Hits 51639/51644 (1.000)
+[Play] Success 51569/52289 (0.986) | Hits 52284/52289 (1.000)
+[Play] Success 52224/52946 (0.986) | Hits 52941/52946 (1.000)
+[Play] Success 52812/53537 (0.986) | Hits 53532/53537 (1.000)
+[Play] Success 53466/54197 (0.987) | Hits 54192/54197 (1.000)
+[Play] Success 54035/54798 (0.986) | Hits 54793/54798 (1.000)
+[Play] Success 54630/55428 (0.986) | Hits 55422/55428 (1.000)
+[Play] Success 55281/56083 (0.986) | Hits 56077/56083 (1.000)
+[Play] Success 55880/56688 (0.986) | Hits 56681/56688 (1.000)
+[Play] Success 56536/57345 (0.986) | Hits 57338/57345 (1.000)
+[Play] Success 57147/57960 (0.986) | Hits 57953/57960 (1.000)
+[Play] Success 57760/58579 (0.986) | Hits 58572/58579 (1.000)
+[Play] Success 58416/59241 (0.986) | Hits 59234/59241 (1.000)
+[Play] Success 58984/59826 (0.986) | Hits 59819/59826 (1.000)
+[Play] Success 59618/60481 (0.986) | Hits 60474/60481 (1.000)
+[INFO] Saved evaluation results to: /root/pace/pace_repo/logs/t1_table_tennis_mpg/final/eval_result/eval_results.csv (60481 records)
+[Play] Success 60228/61097 (0.986) | Hits 61090/61097 (1.000)
+[Play] Success 60856/61729 (0.986) | Hits 61722/61729 (1.000)
+[Play] Success 61502/62378 (0.986) | Hits 62371/62378 (1.000)
+[Play] Success 62116/62996 (0.986) | Hits 62989/62996 (1.000)
+[Play] Success 62767/63648 (0.986) | Hits 63641/63648 (1.000)
+[Play] Success 63383/64269 (0.986) | Hits 64262/64269 (1.000)
+[Play] Success 63968/64877 (0.986) | Hits 64870/64877 (1.000)
+[Play] Success 64596/65525 (0.986) | Hits 65518/65525 (1.000)
+[Play] Success 65196/66140 (0.986) | Hits 66133/66140 (1.000)
+[Play] Success 65841/66786 (0.986) | Hits 66779/66786 (1.000)
+[Play] Success 66449/67397 (0.986) | Hits 67390/67397 (1.000)
+[Play] Success 67094/68048 (0.986) | Hits 68041/68048 (1.000)
+[Play] Success 67738/68695 (0.986) | Hits 68688/68695 (1.000)
+[Play] Success 68332/69300 (0.986) | Hits 69293/69300 (1.000)
+[Play] Success 68937/69924 (0.986) | Hits 69917/69924 (1.000)
+[Play] Success 69518/70551 (0.985) | Hits 70544/70551 (1.000)
+[Play] Success 70148/71192 (0.985) | Hits 71185/71192 (1.000)
+[Play] Success 70777/71828 (0.985) | Hits 71821/71828 (1.000)
+[Play] Success 71385/72439 (0.985) | Hits 72432/72439 (1.000)
+[Play] Success 72041/73098 (0.986) | Hits 73091/73098 (1.000)
+[INFO] Saved evaluation results to: /root/pace/pace_repo/logs/t1_table_tennis_mpg/final/eval_result/eval_results.csv (73098 records)
+[Play] Success 72660/73720 (0.986) | Hits 73713/73720 (1.000)
+[Play] Success 73289/74353 (0.986) | Hits 74345/74353 (1.000)
+[Play] Success 73885/74960 (0.986) | Hits 74952/74960 (1.000)
+[Play] Success 74464/75572 (0.985) | Hits 75564/75572 (1.000)
+[Play] Success 75109/76235 (0.985) | Hits 76227/76235 (1.000)
+[Play] Success 75731/76864 (0.985) | Hits 76856/76864 (1.000)
+[Play] Success 76342/77479 (0.985) | Hits 77471/77479 (1.000)
+[Play] Success 76981/78125 (0.985) | Hits 78117/78125 (1.000)
+[Play] Success 77595/78740 (0.985) | Hits 78732/78740 (1.000)
+[Play] Success 78253/79401 (0.986) | Hits 79393/79401 (1.000)
+[Play] Success 78850/80014 (0.985) | Hits 80006/80014 (1.000)
+[Play] Success 79421/80610 (0.985) | Hits 80602/80610 (1.000)
+[Play] Success 80045/81263 (0.985) | Hits 81255/81263 (1.000)
+[Play] Success 80676/81897 (0.985) | Hits 81889/81897 (1.000)
+[Play] Success 81297/82523 (0.985) | Hits 82515/82523 (1.000)
+[Play] Success 81937/83168 (0.985) | Hits 83160/83168 (1.000)
+[Play] Success 82538/83774 (0.985) | Hits 83766/83774 (1.000)
+[Play] Success 83194/84435 (0.985) | Hits 84427/84435 (1.000)
+[Play] Success 83793/85046 (0.985) | Hits 85038/85046 (1.000)
+[Play] Success 84377/85656 (0.985) | Hits 85648/85656 (1.000)
+[INFO] Saved evaluation results to: /root/pace/pace_repo/logs/t1_table_tennis_mpg/final/eval_result/eval_results.csv (85656 records)
+[Play] Success 85022/86314 (0.985) | Hits 86306/86314 (1.000)
+[Play] Success 85631/86928 (0.985) | Hits 86920/86928 (1.000)
+[Play] Success 86269/87569 (0.985) | Hits 87561/87569 (1.000)
+[Play] Success 86902/88203 (0.985) | Hits 88195/88203 (1.000)
+[Play] Success 87509/88812 (0.985) | Hits 88804/88812 (1.000)
+[Play] Success 88157/89464 (0.985) | Hits 89455/89464 (1.000)
+[Play] Success 88775/90098 (0.985) | Hits 90089/90098 (1.000)
+[Play] Success 89360/90712 (0.985) | Hits 90703/90712 (1.000)
+[Play] Success 89987/91364 (0.985) | Hits 91355/91364 (1.000)
+[Play] Success 90571/91956 (0.985) | Hits 91946/91956 (1.000)
+[Play] Success 91222/92613 (0.985) | Hits 92603/92613 (1.000)

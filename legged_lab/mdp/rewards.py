@@ -862,3 +862,46 @@ def penalty_stand_still(
     penalty = both_feet_in_contact & (position_diff > move_threshold)
     penalty = penalty.float()
     return penalty
+
+
+# ---------------------------------------------------------------------------
+# PACE-MP: human motion prior (HIM mocap stroke library, SMASH-style matching)
+# ---------------------------------------------------------------------------
+def reward_motion_prior(
+    env,
+    std: float = 0.6,
+    joint_weights: tuple = (1.0, 1.0, 1.0, 0.0, 0.5, 0.3, 0.3, 0.3, 0.0),
+) -> torch.Tensor:
+    """exp(-sum_j w_j (q_j - q_ref_j)^2 / std^2) while a matched stroke is active.
+
+    Elbow yaw (the T1's only forearm-roll DoF) is excluded by default, mirroring SMASH's
+    exclusion of the wrist so the policy can still adapt the paddle face.
+    """
+    q = env.robot.data.joint_pos[:, env.mp_joint_ids]
+    w = torch.tensor(joint_weights, device=q.device, dtype=q.dtype)
+    err = ((q - env.mp_ref_now) ** 2 * w).sum(dim=-1)
+    rew = torch.exp(-err / (std * std)) * env.mp_active.float()
+    return torch.nan_to_num(rew, nan=0.0)
+
+
+def reward_motion_prior_gated(
+    env,
+    std: float = 0.6,
+    pre_window: float = 0.3,
+    post_window: float = 0.2,
+    post_scale: float = 2.0,
+    joint_weights: tuple = (1.0, 1.0, 1.0, 0.0, 0.5, 0.3, 0.3, 0.3, 0.0),
+) -> torch.Tensor:
+    """Strike-gated motion prior (SMASH-style indicator windows).
+
+    Imitation only counts during the swing, tau in [-pre_window, 0], and during the follow-through
+    (0, post_window], which exists only after the paddle actually hit the ball. Outside the window,
+    PACE's task rewards act alone, so the policy cannot farm imitation at the expense of hitting.
+    """
+    q = env.robot.data.joint_pos[:, env.mp_joint_ids]
+    w = torch.tensor(joint_weights, device=q.device, dtype=q.dtype)
+    r = torch.exp(-((q - env.mp_ref_now) ** 2 * w).sum(dim=-1) / (std * std))
+    tau = env.mp_tau
+    swing = env.mp_active & ~env.mp_post & (tau >= -pre_window)
+    follow = env.mp_active & env.mp_post & (tau <= post_window)
+    return torch.nan_to_num(r * (swing.float() + post_scale * follow.float()), nan=0.0)
